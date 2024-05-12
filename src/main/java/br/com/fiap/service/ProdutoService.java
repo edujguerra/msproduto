@@ -2,33 +2,62 @@ package br.com.fiap.service;
 
 import br.com.fiap.model.Produto;
 import br.com.fiap.repository.ProdutoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
 public class ProdutoService {
 
-    @Autowired
-    private ProdutoRepository produtoRepository;
+    private final ProdutoRepository produtoRepository;
 
-    public ProdutoService(ProdutoRepository produtoRepository) {
-        this.produtoRepository = produtoRepository;
+    public ProdutoService(ProdutoRepository repository) {
+        this.produtoRepository = repository;
     }
 
-    public List<Produto> listarProdutos() {
+    public List<Produto> buscarTodos() {
         return produtoRepository.findAll();
     }
 
-    public Produto cadastrarProduto(Produto produto) {
-        return produtoRepository.save(produto);
+    public Produto salvar(Produto produto) {
+
+        ResponseEntity<Object> response = validaCampos(produto);
+        if (!response.getStatusCode().equals(HttpStatus.OK)  ){
+            throw new NoSuchElementException("Produto com problemas..." + response);
+        }
+
+        produto = produtoRepository.save(produto);
+        return produto;
     }
 
-    public ResponseEntity<?> obterProduto(Integer produtoId) {
+    private ResponseEntity<Object> validaCampos(Produto produto) {
+
+        if (produto.getNome() == null
+                || produto.getNome().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nome não pode ser vazio.");
+        }
+        if (produto.getQuantidade_estoque() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Quantidade em Estoque não pode ser nula");
+        }
+        if (produto.getQuantidade_estoque().compareTo(0) <= 0) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Quantidade em estoque não pode ser igual ou menor que zero.");
+        }
+        if (produto.getPreco() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Preço não pode ser vazio");
+        }
+        if (produto.getPreco().compareTo(new BigDecimal(0)) <= 0) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Preço não pode ser igual ou menor que zero.");
+        }
+
+        return ResponseEntity.ok(produto);
+    }
+
+    public ResponseEntity<Object> buscarUm(Integer produtoId) {
+
         Produto produto = produtoRepository.findById(produtoId).orElse(null);
 
         if (produto != null) {
@@ -38,26 +67,33 @@ public class ProdutoService {
         }
     }
 
-    public Produto atualizarProduto(Integer produtoId, Produto novoProduto) {
-        Produto produtoExistente = produtoRepository.findById(produtoId).orElse(null);
+    public ResponseEntity<Object> atualizar(Integer id, Produto novo) {
 
-        if(produtoExistente != null) {
-            produtoExistente.setNome(novoProduto.getNome());
-            produtoExistente.setDescricao(novoProduto.getDescricao());
-            produtoExistente.setQuantidade_estoque(novoProduto.getQuantidade_estoque());
-            produtoExistente.setPreco(novoProduto.getPreco());
+        Produto existente = produtoRepository.findById(id).orElse(null);
 
-            return produtoRepository.save(produtoExistente);
+        if(existente != null) {
+            ResponseEntity<Object> response = validaCampos(novo);
+            if (!response.getStatusCode().equals(HttpStatus.OK)  ){
+                return response;
+            }
+
+            existente.setNome(novo.getNome());
+            existente.setDescricao(novo.getDescricao());
+            existente.setQuantidade_estoque(novo.getQuantidade_estoque());
+            existente.setPreco(novo.getPreco());
+
+            return ResponseEntity.ok(produtoRepository.save(existente));
         } else {
-            throw new NoSuchElementException("Produto nao encontrado");
+            throw new NoSuchElementException("Produto não encontrado");
         }
     }
 
-    public void excluirProduto(Integer produtoId) {
-        Produto produtoExistente = produtoRepository.findById(produtoId).orElse(null);
+    public void excluir(Integer id) {
+
+        Produto produtoExistente = produtoRepository.findById(id).orElse(null);
 
         if (produtoExistente != null) {
-            produtoRepository.deleteById(produtoId);
+            produtoRepository.deleteById(id);
         } else {
             throw new NoSuchElementException("Produto nao encontrado");
         }

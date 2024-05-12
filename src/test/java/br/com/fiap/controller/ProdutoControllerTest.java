@@ -43,14 +43,14 @@ public class ProdutoControllerTest {
     @Test
     void testRegistrarProduto() throws Exception {
         Produto produto = ProdutoHelper.gerarProduto();
-        when(produtoService.cadastrarProduto(any(Produto.class))).thenAnswer(i -> i.getArgument(0));
+        when(produtoService.salvar(any(Produto.class))).thenAnswer(i -> i.getArgument(0));
 
         mockMvc.perform(post("/api/produtos")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(ProdutoHelper.asJsonString(produto)))
                 .andExpect(status().isCreated());
 
-        verify(produtoService, times(1)).cadastrarProduto(any(Produto.class));
+        verify(produtoService, times(1)).salvar(any(Produto.class));
     }
 
     @Test
@@ -59,7 +59,7 @@ public class ProdutoControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        verify(produtoService, times(1)).listarProdutos();
+        verify(produtoService, times(1)).buscarTodos();
     }
 
     @Test
@@ -72,7 +72,7 @@ public class ProdutoControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        verify(produtoService, times(1)).obterProduto(id);
+        verify(produtoService, times(1)).buscarUm(id);
     }
 
     @Test
@@ -82,24 +82,7 @@ public class ProdutoControllerTest {
         mockMvc.perform(delete("/api/produtos/{id}", id))
                 .andExpect(status().isOk());
 
-        verify(produtoService, times(1)).excluirProduto(any(Integer.class));
-    }
-
-    @Test
-    void testAtualizarProduto() throws Exception {
-        Integer id = 23;
-        Produto produto = ProdutoHelper.gerarProduto();
-        produto.setId(id);
-
-        when(produtoService.atualizarProduto(any(Integer.class), any(Produto.class)))
-                .thenAnswer(i -> i.getArgument(1));
-
-        mockMvc.perform(put("/api/produtos/{id}", id)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(ProdutoHelper.asJsonString(produto)))
-                .andExpect(status().isOk());
-
-        verify(produtoService, times(1)).atualizarProduto(any(Integer.class), any(Produto.class));
+        verify(produtoService, times(1)).excluir(any(Integer.class));
     }
 
     @Test

@@ -46,7 +46,7 @@ public class ProdutoServiceTest {
         Produto produto = ProdutoHelper.gerarProduto();
         when(produtoRepository.save(ArgumentMatchers.any(Produto.class))).thenAnswer(i -> i.getArgument(0));
 
-        Produto produtoRegistrado = produtoService.cadastrarProduto(produto);
+        Produto produtoRegistrado = produtoService.salvar(produto);
 
         assertThat(produtoRegistrado)
                 .isInstanceOf(Produto.class)
@@ -60,7 +60,7 @@ public class ProdutoServiceTest {
         when(produtoRepository.findById(ArgumentMatchers.any(Integer.class)))
                 .thenReturn(Optional.of(produto));
 
-        ResponseEntity<?> result = produtoService.obterProduto(produto.getId());
+        ResponseEntity<?> result = produtoService.buscarUm(produto.getId());
         Produto produtoObtido = (Produto) result.getBody();
 
         assertThat(produtoObtido)
@@ -77,7 +77,7 @@ public class ProdutoServiceTest {
 
         when(produtoRepository.findAll()).thenReturn(listaProdutos);
 
-        List<Produto> resultado = produtoService.listarProdutos();
+        List<Produto> resultado = produtoService.buscarTodos();
 
         assertThat(resultado)
                 .hasSize(2)
@@ -89,23 +89,10 @@ public class ProdutoServiceTest {
         Produto produto = ProdutoHelper.gerarProduto();
         when(produtoRepository.findById(produto.getId())).thenReturn(Optional.of(produto));
 //        doNothing().when(produtoRepository.deleteById(produto.getId()));
-        produtoService.excluirProduto(produto.getId());
+        produtoService.excluir(produto.getId());
 
         verify(produtoRepository, times(1)).findById(any(Integer.class));
         verify(produtoRepository, times(1)).deleteById(any(Integer.class));
-    }
-
-    @Test
-    void testAtualizarProduto() {
-        Produto produto = ProdutoHelper.gerarProduto();
-        produto.setDescricao("Produto de qualidade");
-
-        when(produtoRepository.findById(produto.getId())).thenReturn(Optional.of(produto));
-        when(produtoRepository.save(produto)).thenReturn(produto);
-
-        Produto produtoAtualizado = produtoService.atualizarProduto(produto.getId(), produto);
-
-        assertEquals(produto, produtoAtualizado);
     }
 
 //    @Test

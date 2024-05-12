@@ -13,41 +13,47 @@ import java.util.List;
 @RequestMapping("/api/produtos")
 public class ProdutoController {
 
-    @Autowired
-    private ProdutoService produtoService;
+    private final ProdutoService service;
 
     public ProdutoController(ProdutoService produtoService) {
-        this.produtoService = produtoService;
+        this.service = produtoService;
     }
 
     @GetMapping
-    public List<Produto> listarProdutos() {
-        return produtoService.listarProdutos();
+    public List<Produto> buscarTodos() {
+
+        return service.buscarTodos();
     }
 
     @PostMapping
-    public ResponseEntity<Produto> cadastrarProduto(@RequestBody Produto produto) {
-        return new ResponseEntity<>(produtoService.cadastrarProduto(produto), HttpStatus.CREATED);
+    public ResponseEntity<Object> salvar(@RequestBody Produto produto) {
+
+        produto =service.salvar(produto);
+        return new ResponseEntity<>(produto, HttpStatus.CREATED);
     }
 
-    @GetMapping("/{produtoId}")
-    public ResponseEntity<?> obterProduto(@PathVariable Integer produtoId) {
-        return produtoService.obterProduto(produtoId);
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> buscarUm(@PathVariable Integer id) {
+
+        return service.buscarUm(id);
     }
 
-    @PutMapping("/{produtoId}")
-    public Produto atualizarProduto(@PathVariable Integer produtoId, @RequestBody Produto novoProduto) {
-        return produtoService.atualizarProduto(produtoId, novoProduto);
+    @PutMapping("/{id}")
+    public ResponseEntity<Object> atualizar(@PathVariable Integer id, @RequestBody Produto novo) {
+
+        return service.atualizar(id, novo);
     }
 
-    @DeleteMapping("/{produtoId}")
-    public void excluirProduto(@PathVariable Integer produtoId) {
-        produtoService.excluirProduto(produtoId);
+    @DeleteMapping("/{id}")
+    public void excluir(@PathVariable Integer id) {
+
+        service.excluir(id);
     }
 
-    @PutMapping("/atualizar/estoque/{produtoId}/{quantidade}/{entradaSaida}")
-    public Produto atualizarEstoque(@PathVariable Integer produtoId, @PathVariable int quantidade, @PathVariable String entradaSaida) {
-        return produtoService.atualizarEstoque(produtoId, quantidade, entradaSaida);
+    @PutMapping("/atualizar/estoque/{id}/{quantidade}/{entradaSaida}")
+    public Produto atualizarEstoque(@PathVariable Integer id, @PathVariable int quantidade, @PathVariable String entradaSaida) {
+
+        return service.atualizarEstoque(id, quantidade, entradaSaida);
     }
 
 }
