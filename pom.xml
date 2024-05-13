@@ -68,6 +68,7 @@
 			<artifactId>assertj-core</artifactId>
 			<version>3.24.2</version>
 		</dependency>
+
 		<!-- para testar controller de forma mais fluida -->
 		<dependency>
 			<groupId>io.rest-assured</groupId>
