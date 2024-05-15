@@ -20,7 +20,7 @@ public class ProdutoTest {
 
     @Test
     public void testArgsConstrutor() {
-        Produto produto = new Produto(1, "Meu produto", "Produto de boa qualidade", 25, new BigDecimal(15.50));
+        Produto produto = new Produto(1, "Meu produto", "Produto de boa qualidade", 25, new BigDecimal(15.50),null);
         assertNotNull(produto);
     }
 

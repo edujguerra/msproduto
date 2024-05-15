@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 @Data
 @Entity
@@ -30,4 +31,7 @@ public class Produto {
 
     @Column(name = "pr_produto", nullable = false)
     private BigDecimal preco;
+
+    @Column(name = "dt_update")
+    private Timestamp dataUpdate;
 }
