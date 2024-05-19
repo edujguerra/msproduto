@@ -30,6 +30,7 @@ public class ProdutoControllerTest {
 
     @BeforeEach
     void setup() {
+
         autoMock = MockitoAnnotations.openMocks(this);
         ProdutoController produtoController = new ProdutoController(produtoService);
         mockMvc = MockMvcBuilders.standaloneSetup(produtoController).build();
@@ -55,6 +56,7 @@ public class ProdutoControllerTest {
 
     @Test
     void testListarProdutos() throws Exception {
+
         mockMvc.perform(get("/api/produtos")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -64,6 +66,7 @@ public class ProdutoControllerTest {
 
     @Test
     void testObterProduto() throws Exception {
+
         Integer id = 21;
         Produto produto = ProdutoHelper.gerarProduto();
         produto.setId(id);
